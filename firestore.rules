@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper to check if user is signed in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper to check if user owns the document path
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Direct fallback for client state syncing (or matching user profile)
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || (isSignedIn() && userId == "usr_1");
+
+      match /systems/{systemId} {
+        allow read, write: if isOwner(userId) || (isSignedIn() && userId == "usr_1");
+      }
+
+      match /tasks/{taskId} {
+        allow read, write: if isOwner(userId) || (isSignedIn() && userId == "usr_1");
+      }
+
+      match /documents/{docId} {
+        allow read, write: if isOwner(userId) || (isSignedIn() && userId == "usr_1");
+      }
+
+      match /savings/{savingId} {
+        allow read, write: if isOwner(userId) || (isSignedIn() && userId == "usr_1");
+      }
+
+      match /consumables/{consumableId} {
+        allow read, write: if isOwner(userId) || (isSignedIn() && userId == "usr_1");
+      }
+
+      match /appointments/{apptId} {
+        allow read, write: if isOwner(userId) || (isSignedIn() && userId == "usr_1");
+      }
+    }
+
+    // Allow testing collection for liveness probe
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}

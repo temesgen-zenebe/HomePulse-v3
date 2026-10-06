@@ -1,0 +1,161 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile, subscription status, and credentials meta",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["homeowner", "admin", "provider"] },
+        "tier": { "type": "string", "enum": ["Basic", "Premium", "Enterprise"] },
+        "approved": { "type": "boolean" },
+        "pbkdf2Salt": { "type": "string", "description": "Salt used for local key derivation" }
+      },
+      "required": ["id", "name", "email", "role", "tier"]
+    },
+    "HomeSystem": {
+      "title": "Home System",
+      "description": "Mechanical, electrical, safety, plumbing and structure assets of the home",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "health": { "type": "number" },
+        "status": { "type": "string", "enum": ["Optimal", "Good", "Fair", "Critical"] },
+        "category": { "type": "string", "enum": ["Structure", "Mechanical", "Plumbing", "Electrical", "Safety", "Exterior"] },
+        "lastInspected": { "type": "string" },
+        "details": { "type": "string" },
+        "warningThreshold": { "type": "number" },
+        "reportingInterval": { "type": "string" },
+        "serialNumberEncrypted": { "type": "string", "description": "Client-side encrypted serial number" }
+      },
+      "required": ["id", "name", "health", "status", "category"]
+    },
+    "MaintenanceTask": {
+      "title": "Maintenance Task",
+      "description": "A scheduled or pending maintenance task",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "due": { "type": "string" },
+        "priority": { "type": "string", "enum": ["High", "Medium", "Low"] },
+        "why": { "type": "string" },
+        "how": { "type": "string" },
+        "who": { "type": "string" },
+        "where": { "type": "string" },
+        "completed": { "type": "boolean" },
+        "completedAt": { "type": "string" },
+        "video": { "type": "string" }
+      },
+      "required": ["id", "title", "due", "priority", "completed"]
+    },
+    "DocumentRecord": {
+      "title": "Document Record",
+      "description": "Warranty certificate, manual, receipt, or inspection report",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["all", "warranty", "receipt", "photo", "report"] },
+        "date": { "type": "string" },
+        "size": { "type": "string" },
+        "isEncrypted": { "type": "boolean", "description": "True if the content/metadata is protected client-side" },
+        "encryptedPayload": { "type": "string", "description": "Base64 AES-GCM ciphertext containing document URL, details, and metadata" },
+        "purchaseDate": { "type": "string" },
+        "expirationDate": { "type": "string" },
+        "warrantyAlertActive": { "type": "boolean" }
+      },
+      "required": ["id", "name", "type", "date", "size"]
+    },
+    "SavingsItem": {
+      "title": "Savings Item",
+      "description": "ROI and financial repair cost savings records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "category": { "type": "string" },
+        "amount": { "type": "number" },
+        "amountEncrypted": { "type": "string", "description": "Military grade client-side encrypted cost value" },
+        "description": { "type": "string" },
+        "descriptionEncrypted": { "type": "string", "description": "Encrypted description of saving context" }
+      },
+      "required": ["id", "category"]
+    },
+    "ConsumableItem": {
+      "title": "Consumable Item",
+      "description": "Tracks filter, salt, and battery consumption rates",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "systemId": { "type": "string" },
+        "category": { "type": "string" },
+        "currentLevel": { "type": "number" },
+        "unit": { "type": "string" },
+        "installDate": { "type": "string" },
+        "lifespanDays": { "type": "number" },
+        "dailyUsageRate": { "type": "number" },
+        "daysRemaining": { "type": "number" },
+        "status": { "type": "string", "enum": ["Good", "Low", "Empty"] },
+        "reorderLink": { "type": "string" },
+        "partNumber": { "type": "string" },
+        "cost": { "type": "number" },
+        "costEncrypted": { "type": "string", "description": "Client-side encrypted financial cost" },
+        "alertActive": { "type": "boolean" },
+        "autoReplenish": { "type": "boolean" },
+        "replenishType": { "type": "string" },
+        "replenishTriggered": { "type": "boolean" }
+      },
+      "required": ["id", "name", "category", "currentLevel", "unit", "installDate", "lifespanDays", "dailyUsageRate", "daysRemaining", "status", "reorderLink", "cost", "alertActive"]
+    },
+    "ProAppointment": {
+      "title": "Pro Appointment",
+      "description": "A booking with a service provider",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "providerId": { "type": "string" },
+        "providerName": { "type": "string" },
+        "providerSpecialty": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "issueDescription": { "type": "string" },
+        "status": { "type": "string", "enum": ["Requested", "Scheduled", "In Progress", "Completed", "Rated"] }
+      },
+      "required": ["id", "providerId", "providerName", "providerSpecialty", "date", "time", "issueDescription", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User account documents"
+    },
+    "/users/{userId}/systems/{systemId}": {
+      "schema": "HomeSystem",
+      "description": "Tracked hardware systems for the user"
+    },
+    "/users/{userId}/tasks/{taskId}": {
+      "schema": "MaintenanceTask",
+      "description": "Personal maintenance calendar scheduled tasks"
+    },
+    "/users/{userId}/documents/{docId}": {
+      "schema": "DocumentRecord",
+      "description": "Document vault with PBKDF2 warranties and inspection sheets"
+    },
+    "/users/{userId}/savings/{savingId}": {
+      "schema": "SavingsItem",
+      "description": "YTD savings metrics with zero-knowledge AES-GCM shielding options"
+    },
+    "/users/{userId}/consumables/{consumableId}": {
+      "schema": "ConsumableItem",
+      "description": "Filter and care battery tracking list"
+    },
+    "/users/{userId}/appointments/{apptId}": {
+      "schema": "ProAppointment",
+      "description": "Requested emergency and service tech dispatches"
+    }
+  }
+}

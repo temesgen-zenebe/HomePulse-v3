@@ -1,0 +1,6 @@
+{
+  "name": "HomePulse v3",
+  "description": "Preventive home maintenance platform that tracks home health, tasks, risks, and repairs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
